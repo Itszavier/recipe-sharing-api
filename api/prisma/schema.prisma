@@ -20,6 +20,9 @@ model User {
   name     String
   profile  String?   @default("https://doodleipsum.com/700/avatar?i=39d783c98bfcf597e8c29d3dc5af7bc0")
   ApiKeys  ApiKeys[]
+
+  createdAt   DateTime @default(now()) // Timestamp when the key was created
+  updatedAt   DateTime @updatedAt  
 }
 
 model ApiKeys {
@@ -43,22 +46,25 @@ model Recipe {
   mealType     String // Type of meal (e.g., Dinner, Lunch)
   cuisine      String // Cuisine type (e.g., Italian, Asian)
   dietaryInfo  DietaryInfo? // Nested model for dietary info
-  prepTime     Int // Prep time in minutes
-  cookTime     Int // Cook time in minutes
+  prepTime     String // Prep time in minutes
+  cookTime     String // Cook time in minutes
   servings     Int // Number of servings
   ingredients  Ingredient[] // One-to-many relationship with ingredients
   instructions String[] // List of instructions
   tags         String[] // List of tags (e.g., "Pasta", "Quick")
-  source       String // URL to the recipe source
+  source       String? // URL to the recipe source
   video        String? // Optional video URL
+  createdby    String @db.ObjectId
+
+  createdAt   DateTime @default(now()) // Timestamp when the key was created
+  updatedAt   DateTime @updatedAt  
 }
 
 model Ingredient {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   name     String // Ingredient name (e.g., "Eggs", "Spaghetti")
   quantity String // Quantity of the ingredient (e.g., "4", "400g")
-  recipeId String    @db.ObjectId// Foreign key to the recipe
-  recipe   Recipe @relation(fields: [recipeId], references: [id]) // Relationship to the Recipe model
+  recipe   Recipe @relation(fields: [id], references: [id]) // Relationship to the Recipe model
 }
 
 model DietaryInfo {
@@ -66,6 +72,5 @@ model DietaryInfo {
   isVegetarian Boolean // Is the recipe vegetarian?
   isVegan      Boolean // Is the recipe vegan?
   isGlutenFree Boolean // Is the recipe gluten-free?
-  recipeId     Int // Foreign key to Recipe
   recipe       Recipe  @relation(fields: [id], references: [id]) // Relationship to Recipe
 }
