@@ -3,6 +3,7 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { AvailablePermissions } from "./permissions";
 
 dotenv.config();
 
@@ -22,10 +23,14 @@ export async function comparePassword(
   return isMatch;
 }
 
-export function generateToken(userId: string): string {
+export function generateToken(
+  userId: string,
+  permissions: string[]
+): string {
   // Define the payload with the user ID
   const payload = {
-    userId: userId, // Add any other claims you need here
+    userId: userId,
+    permissions,
   };
 
   // Sign the token with the payload and secret key, setting an expiration time (optional)

@@ -9,6 +9,7 @@ import {
   encryptPassword,
   generateToken,
 } from "../utils/functions";
+import { AvailablePermissions } from "../utils/permissions";
 
 const router = Router();
 
@@ -54,7 +55,12 @@ router.post("/login", async (req, res, next) => {
       return;
     }
 
-    const accessToken = `Bearer ${generateToken(user.id)}`;
+    const token = generateToken(user.id, [
+      AvailablePermissions.CreateApiKey,
+      AvailablePermissions.CreateRecipe,
+    ]);
+
+    const accessToken = `Bearer ${token}`; // Add any other claims you need here)}`;
 
     res
       .status(200)

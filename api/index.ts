@@ -20,5 +20,5 @@ app.get("/", (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`http://localhost:PORT/`);
+  console.log(`Alive on http://localhost:${PORT}/`);
 });
