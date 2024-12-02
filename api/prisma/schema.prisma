@@ -20,7 +20,19 @@ model User {
   password String
   name  String
   profile String? @default("https://doodleipsum.com/700/avatar?i=39d783c98bfcf597e8c29d3dc5af7bc0")
+}
 
+
+
+model ApiKeys {
+   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+   key         String   @unique
+   name        String?  // Optional descriptive name for the key
+   userId      String   // Reference to the user who owns this key
+   createdAt   DateTime @default(now()) // Timestamp for when the key was created
+   updatedAt   DateTime @updatedAt      // Automatically updated on modification
+   isActive    Boolean  @default(true)  // Field to enable/disable the key
+   permissions String[] // List of permissions associated with this key
 }
 
 

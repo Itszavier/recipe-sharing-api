@@ -1,7 +1,7 @@
 /** @format */
 
 import { Router } from "express";
-
+import apiKeysRoute from "./keys";
 import { z } from "zod";
 import { prisma } from "../db";
 import {
@@ -12,6 +12,8 @@ import {
 import { AvailablePermissions } from "../utils/permissions";
 
 const router = Router();
+
+router.use("/api-keys", apiKeysRoute);
 
 const loginSchema = z.object({
   email: z
