@@ -34,7 +34,7 @@ export function generateToken(
   };
 
   // Sign the token with the payload and secret key, setting an expiration time (optional)
-  const token = jwt.sign(payload, process.env.JWT_SECRECT as string, {
+  const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
     expiresIn: "5h",
   }); // Expires in 1 hour
 

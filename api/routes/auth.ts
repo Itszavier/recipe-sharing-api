@@ -29,7 +29,7 @@ const loginSchema = z.object({
 
 router.post("/login", async (req, res, next) => {
   try {
-    const { error, success } = registerSchema.safeParse(req.body);
+    const { error, success } = loginSchema.safeParse(req.body);
 
     if (!success) {
       res.status(400).json({
