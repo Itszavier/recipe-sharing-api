@@ -31,7 +31,7 @@ model ApiKeys {
   createdAt   DateTime @default(now()) // Timestamp when the key was created
   updatedAt   DateTime @updatedAt      // Automatically updated on modification
   isActive    Boolean  @default(true)  // Flag to enable/disable the key
-  permissions String[] @default(["read:recipe"]) // List of permissions associated with this key
+  permissions String[] @default(["read:recipe", "update:recipe", "create:recipe"]) // List of permissions associated with this key
 }
 
 
