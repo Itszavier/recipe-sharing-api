@@ -17,7 +17,10 @@ datasource db {
 model User {
   id    String  @id @default(auto()) @map("_id") @db.ObjectId
   email String  @unique
-  name  String?
+  password String
+  name  String
+  profile String? @default("https://doodleipsum.com/700/avatar?i=39d783c98bfcf597e8c29d3dc5af7bc0")
+
 }
 
 
