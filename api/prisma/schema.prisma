@@ -54,7 +54,7 @@ model Recipe {
   tags         String[] // List of tags (e.g., "Pasta", "Quick")
   source       String? // URL to the recipe source
   video        String? // Optional video URL
-  createdby    String @db.ObjectId
+  createdbyId    String @db.ObjectId
 
   createdAt   DateTime @default(now()) // Timestamp when the key was created
   updatedAt   DateTime @updatedAt  

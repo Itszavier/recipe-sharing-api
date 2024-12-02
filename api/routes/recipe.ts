@@ -21,6 +21,7 @@ router.get("/", async (req, res, next) => {
 
 router.post("/create", async (req, res, next) => {
   try {
+    const { userId } = req.apiKeyData || {};
     const { success, error } = createRecipeSchema.safeParse(req.body);
 
     if (!success) {
@@ -49,6 +50,7 @@ router.post("/create", async (req, res, next) => {
         video: data.video,
         dietaryInfo: { create: data.dietaryInfo },
         ingredients: { create: data.ingredients },
+        createdbyId: userId as string,
       },
     });
   } catch (error) {
@@ -56,6 +58,8 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
-router.delete("/delete", (req, res, next) => {});
+router.delete("/delete", (req, res, next) => {
+  
+});
 
 export default router;
