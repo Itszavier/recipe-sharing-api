@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String  @unique
+  name  String?
+}
+
+
+
+model Recipe {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  title       String    // Title of the recipe
+  description String    // Description of the recipe
+  image       String    // URL to the recipe image
+  mealType    String    // Type of meal (e.g., Dinner, Lunch)
+  cuisine     String    // Cuisine type (e.g., Italian, Asian)
+  dietaryInfo DietaryInfo? // Nested model for dietary info
+  prepTime    Int       // Prep time in minutes
+  cookTime    Int       // Cook time in minutes
+  servings    Int       // Number of servings
+  ingredients Ingredient[] // One-to-many relationship with ingredients
+  instructions String[]  // List of instructions
+  tags        String[]  // List of tags (e.g., "Pasta", "Quick")
+  source      String    // URL to the recipe source
+  video       String?   // Optional video URL
+}
+
+model Ingredient {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  name      String // Ingredient name (e.g., "Eggs", "Spaghetti")
+  quantity  String // Quantity of the ingredient (e.g., "4", "400g")
+  recipeId  Int    // Foreign key to the recipe
+  recipe   Recipe @relation(fields: [id], references: [id]) // Relationship to the Recipe model
+}
+
+model DietaryInfo {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId // Primary key
+  isVegetarian Boolean // Is the recipe vegetarian?
+  isVegan      Boolean // Is the recipe vegan?
+  isGlutenFree Boolean // Is the recipe gluten-free?
+  recipeId    Int     // Foreign key to Recipe
+  recipe      Recipe  @relation(fields: [id], references: [id]) // Relationship to Recipe
+}

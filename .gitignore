@@ -1,0 +1,76 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+venv/
+.env/
+*.egg-info/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# MacOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IDE/Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build output
+/dist
+/build
+/target
+/out
+/coverage
+*.bak
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Serverless
+.serverless/
+
+# JetBrains Rider
+.idea/
+
+# Bower
+bower_components/
+
+# SASS Cache
+.sass-cache/
+
+# Laravel
+/storage/*.key
+.env.testing
+
+# Other build tools
+*.tsbuildinfo
+
+# Mono repo-specific:
+# Ignore individual package node_modules
+**/node_modules/
