@@ -57,8 +57,8 @@ model Ingredient {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   name     String // Ingredient name (e.g., "Eggs", "Spaghetti")
   quantity String // Quantity of the ingredient (e.g., "4", "400g")
-  recipeId Int // Foreign key to the recipe
-  recipe   Recipe @relation(fields: [id], references: [id]) // Relationship to the Recipe model
+  recipeId String    @db.ObjectId// Foreign key to the recipe
+  recipe   Recipe @relation(fields: [recipeId], references: [id]) // Relationship to the Recipe model
 }
 
 model DietaryInfo {
