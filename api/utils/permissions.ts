@@ -2,7 +2,7 @@
 export const available_permissions = [
   "create:recipe",
   "create:apiKey",
-];
+] as const;
 
 
 export enum AvailablePermissions {

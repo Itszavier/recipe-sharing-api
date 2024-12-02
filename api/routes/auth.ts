@@ -96,7 +96,7 @@ router.post("/register", async (req, res, next) => {
     if (!success) {
       res.status(400).json({
         message: "validation error",
-        validationCapture: error.errors,
+        validationErrors: error.errors,
       });
 
       return;
