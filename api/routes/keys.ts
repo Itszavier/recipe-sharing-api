@@ -57,7 +57,12 @@ router.post("/create", async (req, res, next) => {
 
     // Store the new API key in the database
     const newKey = await prisma.apiKeys.create({
-      data: { key, userId, permissions: data.permissions || [] }, // Handle optional permissions
+      data: {
+        key,
+        name: data.name,
+        userId,
+        permissions: data.permissions,
+      }, // Handle optional permissions
     });
 
     // Return a successful response with the created key
