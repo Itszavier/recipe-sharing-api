@@ -11,7 +11,7 @@ router.get("/", async (req, res, next) => {
 
     res
       .status(200)
-      .json({ message: "--> here is the list ", recipes });
+      .json({ message: "here is the list ", recipes });
 
   } catch (error) {
     next(error);
@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
 });
 
 router.post("/create", (req, res, next) => {
-    
+
 });
 
 router.delete("/delete", (req, res, next) => {});
