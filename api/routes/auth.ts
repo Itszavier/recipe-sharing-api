@@ -4,7 +4,11 @@ import { Router } from "express";
 
 import { z } from "zod";
 import { prisma } from "../db";
-import { comparePassword, encryptPassword } from "../utils/functions";
+import {
+  comparePassword,
+  encryptPassword,
+  generateToken,
+} from "../utils/functions";
 
 const router = Router();
 
@@ -28,7 +32,7 @@ router.post("/login", async (req, res, next) => {
 
     if (!success) {
       res.status(400).json({
-        message: "validation error",
+        message: "Validation error",
         validationCapture: error.errors,
       });
 
@@ -41,28 +45,20 @@ router.post("/login", async (req, res, next) => {
       where: { email: data.email },
     });
 
-    if (!user) {
-      res
-        .status(200)
-        .json({ message: "email or password is invalid" });
+    // If user not found or password is invalid
+    if (
+      !user ||
+      !(await comparePassword(data.password, user.password))
+    ) {
+      res.status(401).json({ message: "Invalid email or password" });
       return;
     }
 
-    const isPasswordValid = await comparePassword(
-      data.password,
-      user.password
-    );
+    const accessToken = generateToken(user.id);
 
-    if (!isPasswordValid) {
-      res
-        .status(200)
-        .json({ message: "email or password is invalid" });
-      return;
-    }
-
-
-
-
+    res
+      .status(200)
+      .json({ message: "user successfully logged in", accessToken });
   } catch (error) {
     next(error);
   }
