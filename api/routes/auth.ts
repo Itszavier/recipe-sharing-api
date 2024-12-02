@@ -54,7 +54,7 @@ router.post("/login", async (req, res, next) => {
       return;
     }
 
-    const accessToken = generateToken(user.id);
+    const accessToken = `Bearer ${generateToken(user.id)}`;
 
     res
       .status(200)
