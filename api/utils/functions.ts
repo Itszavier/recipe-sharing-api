@@ -26,7 +26,7 @@ export async function comparePassword(
 export function generateToken(
   userId: string,
   permissions: string[],
-  expiresIn: string  = '5h'
+  expiresIn: string = "5h"
 ): string {
   // Define the payload with the user ID
   const payload = {

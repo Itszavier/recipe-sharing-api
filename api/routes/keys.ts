@@ -14,7 +14,7 @@ const router = Router();
 
 router.use(accessTokenAuth);
 
-router.get("/", async (req, res, next) => {
+router.get("/", async function (req, res, next) {
   try {
     const { userId } = req.user || {};
 
@@ -36,49 +36,55 @@ const createApiKeySchema = z.object({
   permissions: z.array(z.enum(available_permissions)).optional(), // At least one permission must be provided
 });
 
-router.post("/create", requestLimiter, async (req, res, next) => {
-  try {
-    const { userId } = req.user || {};
+router.post(
+  "/create",
+  requestLimiter,
+  async function (req, res, next) {
+    try {
+      const { userId } = req.user || {};
 
-    // Validate incoming request data
-    const { error, success } = createApiKeySchema.safeParse(req.body);
+      // Validate incoming request data
+      const { error, success } = createApiKeySchema.safeParse(
+        req.body
+      );
 
-    if (!success) {
-      res.status(400).json({
-        message:
-          "Validation failed. Please check your input and try again.",
-        validationErrors: error.errors, // More descriptive name for error details
+      if (!success) {
+        res.status(400).json({
+          message:
+            "Validation failed. Please check your input and try again.",
+          validationErrors: error.errors, // More descriptive name for error details
+        });
+        return;
+      }
+
+      // Safely extract validated data
+      const data: z.infer<typeof createApiKeySchema> = req.body;
+
+      // Generate a new unique API key
+      const key = uid(38);
+
+      // Store the new API key in the database
+      const newKey = await prisma.apiKeys.create({
+        data: {
+          key,
+          name: data.name,
+          userId,
+          permissions: data.permissions,
+        }, // Handle optional permissions
       });
-      return;
+
+      // Return a successful response with the created key
+      res.status(201).json({
+        message: "Your API key has been successfully created!",
+        api_key: newKey,
+      });
+    } catch (error) {
+      next(error); // Pass the error to the global error handler
     }
-
-    // Safely extract validated data
-    const data: z.infer<typeof createApiKeySchema> = req.body;
-
-    // Generate a new unique API key
-    const key = uid(38);
-
-    // Store the new API key in the database
-    const newKey = await prisma.apiKeys.create({
-      data: {
-        key,
-        name: data.name,
-        userId,
-        permissions: data.permissions,
-      }, // Handle optional permissions
-    });
-
-    // Return a successful response with the created key
-    res.status(201).json({
-      message: "Your API key has been successfully created!",
-      api_key: newKey,
-    });
-  } catch (error) {
-    next(error); // Pass the error to the global error handler
   }
-});
+);
 
-router.delete("/delete", async (req, res, next) => {
+router.delete("/delete", async function (req, res, next) {
   try {
     // Extract the API key or the userId from the request
     const { userId } = req.user || {}; // Assuming userId is part of the authenticated user

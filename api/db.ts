@@ -1,6 +1,6 @@
 /** @format */
 
-import { PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 // Extend the global namespace to include __prisma with the correct type.
 declare global {
@@ -18,5 +18,3 @@ global.__prisma.$connect();
 
 // Export the global prisma instance
 export const prisma: PrismaClient = global.__prisma as PrismaClient;
-
-

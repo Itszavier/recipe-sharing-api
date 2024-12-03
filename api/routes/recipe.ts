@@ -10,7 +10,7 @@ import { requestLimiter } from "../utils/ratelimiter";
 
 const router = Router();
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", async function (req, res, next) {
   try {
     const { userId } = req.apiKeyData || {};
 
@@ -58,7 +58,7 @@ router.post("/create", async (req, res, next) => {
 router.delete(
   "/delete/:recipeId",
   requestLimiter,
-  async (req, res, next) => {
+  async function (req, res, next) {
     try {
       const { userId } = req.apiKeyData || {};
       const recipeId = req.params.recipeId;
@@ -108,7 +108,7 @@ router.delete(
   }
 );
 
-router.get("/", async (req, res, next) => {
+router.get("/", async function (req, res, next) {
   try {
     const {
       id,
