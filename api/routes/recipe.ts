@@ -26,7 +26,7 @@ router.post("/create", async (req, res, next) => {
 
     const data: z.infer<typeof createRecipeSchema> = req.body;
 
-    const newResipe = await prisma.recipe.create({
+    const newRecipe = await prisma.recipe.create({
       data: {
         title: data.title,
         description: data.description,
@@ -46,9 +46,10 @@ router.post("/create", async (req, res, next) => {
       },
     });
 
-    res
-      .status(200)
-      .json({ message: "Recipe created successfully!", newResipe });
+    res.status(200).json({
+      message: "Recipe created successfully!",
+      recipe: newRecipe,
+    });
   } catch (error) {
     next(error);
   }

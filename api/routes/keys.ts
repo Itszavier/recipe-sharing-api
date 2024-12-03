@@ -12,7 +12,6 @@ import { requestLimiter } from "../utils/ratelimiter";
 
 const router = Router();
 
-
 router.use(accessTokenAuth);
 
 router.get("/", async (req, res, next) => {

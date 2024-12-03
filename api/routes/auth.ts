@@ -18,7 +18,6 @@ const router = Router();
 
 router.use("/api-keys", apiKeysRoute);
 
-
 const loginSchema = z.object({
   email: z
     .string()
