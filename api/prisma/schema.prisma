@@ -49,7 +49,7 @@ model Recipe {
   prepTime     String // Prep time in minutes
   cookTime     String // Cook time in minutes
   servings     Int // Number of servings
-  ingredients  Ingredient[] // One-to-many relationship with ingredients
+  ingredients  Ingredient[]  // One-to-many relationship with ingredients
   instructions String[] // List of instructions
   tags         String[] // List of tags (e.g., "Pasta", "Quick")
   source       String? // URL to the recipe source
@@ -65,7 +65,7 @@ model Ingredient {
   name     String // Ingredient name (e.g., "Eggs", "Spaghetti")
   quantity String // Quantity of the ingredient (e.g., "4", "400g")
   recipeId String @db.ObjectId // Foreign key to Recipe
-  recipe   Recipe @relation(fields: [recipeId], references: [id]) // Relationship to Recipe// Relationship to the Recipe model
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe// Relationship to the Recipe model
 }
 
 model DietaryInfo {
@@ -74,7 +74,7 @@ model DietaryInfo {
   isVegan      Boolean // Is the recipe vegan?
   isGlutenFree Boolean // Is the recipe gluten-free?
   recipeId     String  @db.ObjectId  @unique // Foreign key to Recipe
-  recipe       Recipe? @relation(fields: [recipeId], references: [id]) // Relationship to Recipe
+  recipe       Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe
 }
 
 
