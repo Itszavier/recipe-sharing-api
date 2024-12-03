@@ -10,6 +10,7 @@ import {
   generateToken,
 } from "../utils/functions";
 import { AvailablePermissions } from "../utils/permissions";
+import { customError } from "../utils/errorResponse";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.post("/login", async (req, res, next) => {
       !user ||
       !(await comparePassword(data.password, user.password))
     ) {
-      res.status(401).json({ message: "Invalid email or password" });
+      next(customError(401, "Invalid email or password"));
       return;
     }
 
@@ -109,10 +110,7 @@ router.post("/register", async (req, res, next) => {
     });
 
     if (IsUserInDb) {
-      res.status(400).json({
-        message: "user already exist",
-      });
-
+      next(customError(401, "user already exist"));
       return;
     }
 

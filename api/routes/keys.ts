@@ -6,6 +6,7 @@ import { prisma } from "../db";
 import { uid } from "uid";
 import { z } from "zod";
 import { available_permissions } from "../utils/permissions";
+import { customError } from "../utils/errorResponse";
 
 const router = Router();
 
@@ -85,9 +86,7 @@ router.delete("/delete", async (req, res, next) => {
 
     // Check if the API key exists
     if (!key) {
-      res.status(400).json({
-        message: "API key is required for deletion",
-      });
+      next(customError(400, "API key is required for deletion"));
       return;
     }
 
@@ -98,18 +97,18 @@ router.delete("/delete", async (req, res, next) => {
 
     // If the API key does not exist, return an error
     if (!apiKey) {
-      res.status(404).json({
-        message: "API key not found",
-      });
-
+      next(customError(404, "API key not found"));
       return;
     }
 
     // Check if the user owns the API key (optional: this can be customized)
     if (apiKey.userId !== userId) {
-      res.status(403).json({
-        message: "You are not authorized to delete this API key",
-      });
+      next(
+        customError(
+          403,
+          "You are not authorized to delete this API key"
+        )
+      );
 
       return;
     }

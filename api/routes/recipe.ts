@@ -5,6 +5,7 @@ import { prisma } from "../db";
 import { createRecipeSchema } from "../zod_schemas/rescipe";
 import { z } from "zod";
 import checkPermissions from "../utils/permissions";
+import { customError } from "../utils/errorResponse";
 
 const router = Router();
 
@@ -75,18 +76,23 @@ router.delete("/delete/:recipeId", async (req, res, next) => {
     });
 
     if (!recipe) {
-      res.status(404).json({
-        message:
-          "Recipe not found. It may have already been deleted.",
-      });
+      next(
+        customError(
+          404,
+          "Recipe not found. It may have already been deleted."
+        )
+      );
       return;
     }
 
     // Verify the user is the creator of the recipe
     if (recipe.createdbyId !== userId) {
-      res.status(403).json({
-        message: "You are not authorized to delete this recipe.",
-      });
+      next(
+        customError(
+          403,
+          "You are not authorized to delete this recipe."
+        )
+      );
       return;
     }
 
