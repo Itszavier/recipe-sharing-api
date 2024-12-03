@@ -37,7 +37,7 @@ router.post("/login", async (req, res, next) => {
     if (!success) {
       res.status(400).json({
         message: "Validation error",
-        validationCapture: error.errors,
+        validationError: error.errors,
       });
 
       return;

@@ -1,3 +1,5 @@
+<!-- @format -->
+
 Using a JSON file is a great way to start. Here’s how you can structure and manage your data in a JSON file while keeping it scalable for a future upgrade to a database.
 
 ---
@@ -112,6 +114,7 @@ Create a JSON file named `recipes.json` with the following structure:
 ---
 
 ### **2. Managing the JSON File**
+
 - **File Location**: Store the `recipes.json` file in your project directory.
 - **Read Operations**: Use a file reading library to access and parse the JSON data in your app.
 - **Write Operations**: Use the same library to add or update data (e.g., adding a new recipe).
@@ -123,10 +126,12 @@ Create a JSON file named `recipes.json` with the following structure:
 When you're ready to upgrade to a database, this JSON structure can easily be migrated. Here’s how:
 
 1. **Database Type**:
+
    - Use a relational database like **PostgreSQL** or **MySQL** if you want strong relationships (e.g., linking recipes to categories or users).
    - Use a NoSQL database like **MongoDB** for a more flexible, JSON-like schema.
 
 2. **Migration Plan**:
+
    - Read the JSON file in your app.
    - Write a script to insert the data into the database, using tools like an ORM (e.g., Sequelize for SQL databases or Mongoose for MongoDB).
 
@@ -140,7 +145,21 @@ When you're ready to upgrade to a database, this JSON structure can easily be mi
 ---
 
 ### **4. Tools to Work with JSON**
+
 - **Node.js**: Use the `fs` module for reading/writing the JSON file.
 - **JSON Server**: A lightweight tool to create a fake REST API directly from the JSON file for testing.
 
 Let me know if you need help with coding the file handling or transitioning to a database!
+
+## Oauth2 App id
+
+```prisma
+model App {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId     String   @unique
+  clientSecret String   @unique
+  scopes       String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+```
