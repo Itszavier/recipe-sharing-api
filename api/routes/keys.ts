@@ -7,8 +7,17 @@ import { uid } from "uid";
 import { z } from "zod";
 import { available_permissions } from "../utils/permissions";
 import { customError } from "../utils/errorResponse";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
+
+const requestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  message: "Too many login attempts, please try again later.",
+});
 
 router.use(accessTokenAuth);
 
@@ -34,7 +43,7 @@ const createApiKeySchema = z.object({
   permissions: z.array(z.enum(available_permissions)).optional(), // At least one permission must be provided
 });
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", requestLimiter, async (req, res, next) => {
   try {
     const { userId } = req.user || {};
 

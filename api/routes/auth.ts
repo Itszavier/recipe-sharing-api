@@ -11,10 +11,19 @@ import {
 } from "../utils/functions";
 import { AvailablePermissions } from "../utils/permissions";
 import { customError } from "../utils/errorResponse";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
 
 router.use("/api-keys", apiKeysRoute);
+
+const requestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  message: "Too many login attempts, please try again later.",
+});
 
 const loginSchema = z.object({
   email: z
@@ -30,7 +39,7 @@ const loginSchema = z.object({
   }),
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", requestLimiter, async (req, res, next) => {
   try {
     const { error, success } = loginSchema.safeParse(req.body);
 
@@ -90,7 +99,7 @@ const registerSchema = z.object({
   }),
 });
 
-router.post("/register", async (req, res, next) => {
+router.post("/register", requestLimiter, async (req, res, next) => {
   try {
     const { error, success } = registerSchema.safeParse(req.body);
 
