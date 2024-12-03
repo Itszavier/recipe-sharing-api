@@ -4,6 +4,7 @@ import { Router } from "express";
 import { prisma } from "../db";
 import { createRecipeSchema } from "../zod_schemas/rescipe";
 import { z } from "zod";
+import checkPermissions from "../utils/permissions";
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.get("/", async (req, res, next) => {
 router.post("/create", async (req, res, next) => {
   try {
     const { userId } = req.apiKeyData || {};
+
     const { success, error } = createRecipeSchema.safeParse(req.body);
 
     if (!success) {
@@ -53,13 +55,51 @@ router.post("/create", async (req, res, next) => {
         createdbyId: userId as string,
       },
     });
+
+    res
+      .status(200)
+      .json({ message: "Recipe created successfully!", newResipe });
   } catch (error) {
     next(error);
   }
 });
 
-router.delete("/delete", (req, res, next) => {
-  
+
+router.delete("/delete/:recipeId", async (req, res, next) => {
+  try {
+    const { userId } = req.apiKeyData || {};
+    const recipeId = req.params.recipeId;
+
+    // Check if the recipe exists
+    const recipe = await prisma.recipe.findUnique({
+      where: { id: recipeId },
+    });
+
+    if (!recipe) {
+      res.status(404).json({
+        message:
+          "Recipe not found. It may have already been deleted.",
+      });
+      return;
+    }
+
+    // Verify the user is the creator of the recipe
+    if (recipe.createdbyId !== userId) {
+      res.status(403).json({
+        message: "You are not authorized to delete this recipe.",
+      });
+      return;
+    }
+
+    // Delete the recipe
+    await prisma.recipe.delete({ where: { id: recipeId } });
+
+    res.status(200).json({
+      message: "Recipe deleted successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

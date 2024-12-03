@@ -64,13 +64,16 @@ model Ingredient {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   name     String // Ingredient name (e.g., "Eggs", "Spaghetti")
   quantity String // Quantity of the ingredient (e.g., "4", "400g")
-  recipe   Recipe @relation(fields: [id], references: [id]) // Relationship to the Recipe model
+  recipeId String @db.ObjectId // Foreign key to Recipe
+  recipe   Recipe @relation(fields: [recipeId], references: [id]) // Relationship to Recipe// Relationship to the Recipe model
 }
 
 model DietaryInfo {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId // Primary key
+  id           String @id @default(auto()) @map("_id") @db.ObjectId // Primary key
   isVegetarian Boolean // Is the recipe vegetarian?
   isVegan      Boolean // Is the recipe vegan?
   isGlutenFree Boolean // Is the recipe gluten-free?
-  recipe       Recipe  @relation(fields: [id], references: [id]) // Relationship to Recipe
+  recipeId     String  @db.ObjectId  @unique // Foreign key to Recipe
+  recipe       Recipe? @relation(fields: [recipeId], references: [id]) // Relationship to Recipe
 }
+
