@@ -8,18 +8,18 @@ import apiRoutes from "./routes/api";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-/**
- * TODO
- */
 app.use(cors());
+
 app.use(express.json());
+
 //routes
 app.use("/auth", authRoutes);
+
 app.use("/api", apiRoutes);
+
+
 app.get("/", (req, res, next) => {
-  res.status(200).json({
-    recipes: [],
-  });
+  res.status(200).send('welcome to our recipe libaray')
 });
 
 app.use((req, res, next) => {
@@ -28,6 +28,8 @@ app.use((req, res, next) => {
       "Oops! Seems like you've wandered out of the library's bounds. 📚 Let's get you back on track!",
   });
 });
+
+
 
 app.use(
   (err: any, req: Request, res: Response, next: NextFunction) => {
