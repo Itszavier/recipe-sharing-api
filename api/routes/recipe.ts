@@ -64,7 +64,6 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
-
 router.delete("/delete/:recipeId", async (req, res, next) => {
   try {
     const { userId } = req.apiKeyData || {};
@@ -91,6 +90,13 @@ router.delete("/delete/:recipeId", async (req, res, next) => {
       return;
     }
 
+    await prisma.dietaryInfo.delete({
+      where: { recipeId: recipeId },
+    });
+
+    await prisma.ingredient.deleteMany({
+      where: { recipeId: recipeId },
+    });
     // Delete the recipe
     await prisma.recipe.delete({ where: { id: recipeId } });
 
