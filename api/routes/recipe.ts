@@ -89,13 +89,6 @@ router.delete(
         return;
       }
 
-      await prisma.dietaryInfo.delete({
-        where: { recipeId: recipeId },
-      });
-
-      await prisma.ingredient.deleteMany({
-        where: { recipeId: recipeId },
-      });
       // Delete the recipe
       await prisma.recipe.delete({ where: { id: recipeId } });
 
