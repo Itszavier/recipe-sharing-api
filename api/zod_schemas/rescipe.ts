@@ -18,7 +18,7 @@ export const timeFormatSchema = z.string().refine(
 export const createRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  image: z.string().url("Invalid URL for image"),
+  image: z.string().url("Invalid URL for image").optional(), // image is now optional
   mealType: z.string().min(1, "Meal type is required"),
   cuisine: z.string().min(1, "Cuisine type is required"),
   dietaryInfo: z
@@ -44,7 +44,7 @@ export const createRecipeSchema = z.object({
   instructions: z
     .array(z.string().min(1, "Instruction is required"))
     .min(1, "At least one instruction is required"),
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(), // tags are now optional
   source: z.string().url("Invalid URL for recipe source").optional(),
   video: z.string().url("Invalid video URL").optional(),
 });

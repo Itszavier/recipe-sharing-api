@@ -7,6 +7,7 @@ import { z } from "zod";
 import checkPermissions from "../utils/permissions";
 import { customError } from "../utils/errorResponse";
 import { requestLimiter } from "../utils/ratelimiter";
+import { createRecipeWithIngredients } from "../functions/recipe";
 
 const router = Router();
 
@@ -26,25 +27,13 @@ router.post("/create", async function (req, res, next) {
 
     const data: z.infer<typeof createRecipeSchema> = req.body;
 
-    const newRecipe = await prisma.recipe.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        image: data.image,
-        mealType: data.mealType,
-        cuisine: data.cuisine,
-        prepTime: data.prepTime,
-        cookTime: data.cookTime,
-        servings: data.servings,
-        instructions: data.instructions,
-        tags: data.tags,
-        source: data.source,
-        video: data.video,
-        dietaryInfo: { create: data.dietaryInfo },
-        ingredients: { create: data.ingredients },
+    const newRecipe = await createRecipeWithIngredients(
+      {
+        ...data,
         createdbyId: userId as string,
       },
-    });
+      data.dietaryInfo
+    );
 
     res.status(200).json({
       message: "Recipe created successfully!",

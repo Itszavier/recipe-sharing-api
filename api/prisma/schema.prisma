@@ -82,6 +82,6 @@ model DietaryInfo {
   isVegetarian Boolean // Is the recipe vegetarian?
   isVegan      Boolean // Is the recipe vegan?
   isGlutenFree Boolean // Is the recipe gluten-free?
-  recipeId     String  @unique @db.ObjectId // Foreign key to Recipe
+  recipeId     String?  @unique @db.ObjectId // Foreign key to Recipe
   recipe       Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe
 }

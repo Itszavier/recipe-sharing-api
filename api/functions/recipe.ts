@@ -1,13 +1,9 @@
 /** @format */
 
-import {
-  DietaryInfo,
-  Recipe,
-  RecipeIngredient,
-} from "@prisma/client";
+import { Recipe, RecipeIngredient } from "@prisma/client";
 import { prisma } from "../db";
 
-interface RecipeData {
+interface IRecipeData {
   title: string; // Title of the recipe
   description: string; // Description of the recipe
   image?: string; // Optional image URL for the recipe
@@ -26,19 +22,22 @@ interface RecipeData {
   source?: string; // Optional URL to the recipe source
   video?: string; // Optional video URL for the recipe
   createdbyId: string; // User ID who created the recipe
-  dietaryInfo?: {
-    // Dietary information for the recipe
-    isVegetarian: boolean; // Is the recipe vegetarian?
-    isVegan: boolean; // Is the recipe vegan?
-    isGlutenFree: boolean; // Is the recipe gluten-free?
-    recipeId: string;
-  };
+}
+
+interface IDietaryInfo {
+  // Dietary information for the recipe
+  isVegetarian: boolean; // Is the recipe vegetarian?
+  isVegan: boolean; // Is the recipe vegan?
+  isGlutenFree: boolean; // Is the recipe gluten-free?
+  recipeId?: string;
 }
 
 export async function createRecipeWithIngredients(
-  recipe: RecipeData
+  recipe: IRecipeData,
+  dietaryInfo?: IDietaryInfo
 ) {
-  const { ingredients, dietaryInfo, ...rest } = recipe;
+  const { ingredients, ...rest } = recipe;
+
   const ingredientsToUse = await Promise.all(
     ingredients.map(async (ingredient, index) => {
       return await prisma.ingredient.upsert({
@@ -52,10 +51,13 @@ export async function createRecipeWithIngredients(
     })
   );
 
-  await prisma.recipe.create({
+  return await prisma.recipe.create({
     data: {
       ...rest,
-      dietaryInfo: { create: dietaryInfo },
+      dietaryInfo: dietaryInfo
+        ? { create: dietaryInfo } // Create dietary info if provided
+        : undefined,
+
       ingredients: {
         create: ingredientsToUse.map((ingredient, index) => {
           return {
@@ -64,6 +66,16 @@ export async function createRecipeWithIngredients(
             quantity: ingredients[index].quantity,
           };
         }),
+      },
+    },
+
+    include: {
+      dietaryInfo: true,
+      ingredients: {
+        include: {
+          Ingredient: { include: { recipes: true } },
+          recipe: true,
+        },
       },
     },
   });
