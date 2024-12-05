@@ -49,7 +49,7 @@ model Recipe {
   cookTime     String // Cook time in minutes
   servings     Int // Number of servings
   ingredients  RecipeIngredient[] // One-to-many relationship with ingredients
-  instructions String[] // List of instructions
+  instructions instruction[] // List of instructions
   tags         String[] // List of tags (e.g., "Pasta", "Quick")
   source       String? // URL to the recipe source
   video        String? // Optional video URL
@@ -62,8 +62,8 @@ model Ingredients {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String  @unique // Enforces unique ingredient names
   description String? // Optional description of the ingredient
-
   RecipeIngredient RecipeIngredient[]
+  image String? 
 }
 
 model RecipeIngredient {
@@ -83,4 +83,12 @@ model DietaryInfo {
   isGlutenFree Boolean // Is the recipe gluten-free?
   recipeId     String? @unique @db.ObjectId // Foreign key to Recipe
   recipe       Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe
+}
+
+model instruction  {
+  id  String @id @default(auto()) @map("_id") @db.ObjectId
+  text String 
+  image String? 
+  recipeId String @db.ObjectId 
+  recipe       Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }

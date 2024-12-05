@@ -4,10 +4,9 @@ import { Router } from "express";
 import { prisma } from "../db";
 import { createRecipeSchema } from "../zod_schemas/rescipe";
 import { z } from "zod";
-import checkPermissions from "../utils/permissions";
 import { customError } from "../utils/errorResponse";
 import { requestLimiter } from "../utils/ratelimiter";
-import { createRecipeWithIngredients } from "../functions/recipe";
+import { createRecipe } from "../functions/recipe";
 
 const router = Router();
 
@@ -25,15 +24,20 @@ router.post("/create", async function (req, res, next) {
       return;
     }
 
-    const data: z.infer<typeof createRecipeSchema> = req.body;
+    const {
+      instructions,
+      dietaryInfo,
+      ...recipeDetails
+    }: z.infer<typeof createRecipeSchema> = req.body;
 
-    const newRecipe = await createRecipeWithIngredients(
-      {
-        ...data,
+    const newRecipe = await createRecipe({
+      recipe: {
+        ...recipeDetails,
         createdbyId: userId as string,
       },
-      data.dietaryInfo
-    );
+      instructions,
+      dietaryInfo,
+    });
 
     res.status(200).json({
       message: "Recipe created successfully!",
@@ -43,6 +47,8 @@ router.post("/create", async function (req, res, next) {
     next(error);
   }
 });
+
+
 
 router.delete(
   "/delete/:recipeId",

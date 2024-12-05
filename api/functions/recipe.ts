@@ -1,81 +1,96 @@
 /** @format */
 
-import { Recipe, RecipeIngredient } from "@prisma/client";
 import { prisma } from "../db";
 
 interface IRecipeData {
-  title: string; // Title of the recipe
-  description: string; // Description of the recipe
-  image?: string; // Optional image URL for the recipe
-  mealType: string; // Type of meal (e.g., Dinner, Lunch)
-  cuisine: string; // Cuisine type (e.g., Italian, Asian)
-  prepTime: string; // Preparation time in minutes
-  cookTime: string; // Cooking time in minutes
-  servings: number; // Number of servings
+  title: string;
+  description: string;
+  image?: string;
+  mealType: string;
+  cuisine: string;
+  prepTime: string;
+  cookTime: string;
+  servings: number;
   ingredients: {
-    name: string; // Ingredient name (e.g., "Eggs", "Spaghetti")
-    description?: string; // Optional description of the ingredient
-    quantity: string; // Quantity of the ingredient (e.g., "2", "400g")
-  }[]; // Array of ingredients used in the recipe
-  instructions: string[]; // List of instructions for preparing the recipe
-  tags?: string[]; // Optional list of tags (e.g., ["Pasta", "Quick"])
-  source?: string; // Optional URL to the recipe source
-  video?: string; // Optional video URL for the recipe
-  createdbyId: string; // User ID who created the recipe
+    name: string;
+    description?: string;
+    quantity: string;
+  }[];
+  tags?: string[];
+  source?: string;
+  video?: string;
+  createdbyId: string;
 }
 
+interface IIngredients {
+  name: string;
+  description?: string;
+  quantity: string;
+}
 interface IDietaryInfo {
-  // Dietary information for the recipe
-  isVegetarian: boolean; // Is the recipe vegetarian?
-  isVegan: boolean; // Is the recipe vegan?
-  isGlutenFree: boolean; // Is the recipe gluten-free?
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isGlutenFree: boolean;
   recipeId?: string;
 }
 
-export async function createRecipeWithIngredients(
-  recipe: IRecipeData,
-  dietaryInfo?: IDietaryInfo
-) {
-  const { ingredients, ...rest } = recipe;
+interface IInstructions {
+  text: string;
+  image?: string;
+}
 
+async function createIngredients(ingredients: IIngredients[]) {
   const ingredientsToUse = await Promise.all(
-    ingredients.map(async (ingredient, index) => {
-      return await prisma.ingredients.upsert({
+    ingredients.map((ingredient) =>
+      prisma.ingredients.upsert({
         where: { name: ingredient.name },
         update: {},
         create: {
           name: ingredient.name,
           description: ingredient.description,
         },
-      });
-    })
+      })
+    )
   );
 
-  return await prisma.recipe.create({
-    data: {
-      ...rest,
-      dietaryInfo: dietaryInfo
-        ? { create: dietaryInfo } // Create dietary info if provided
-        : undefined,
+  return ingredientsToUse;
+}
 
-      ingredients: {
-        create: ingredientsToUse.map((ingredient, index) => {
-          return {
+export async function createRecipe(data: {
+  recipe: IRecipeData;
+  instructions: IInstructions[];
+  dietaryInfo?: IDietaryInfo;
+}) {
+  try {
+    const { recipe, instructions, dietaryInfo } = data;
+    const { ingredients, ...recipeDetails } = recipe;
+
+    // Upsert ingredients
+    const ingredientsToUse = await createIngredients(ingredients);
+    
+    // Create recipe
+    return await prisma.recipe.create({
+      data: {
+        ...recipeDetails,
+        dietaryInfo: dietaryInfo
+          ? { create: dietaryInfo }
+          : undefined,
+        ingredients: {
+          create: ingredientsToUse.map((ingredient, index) => ({
             ingredientId: ingredient.id,
             name: ingredient.name,
             quantity: ingredients[index].quantity,
-          };
-        }),
-      },
-    },
-
-    include: {
-      dietaryInfo: true,
-      ingredients: {
-        include: {
-          Ingredient: true,
+          })),
         },
+        instructions: { create: instructions },
       },
-    },
-  });
+      include: {
+        dietaryInfo: true,
+        ingredients: { include: { Ingredient: true } },
+      },
+    });
+  } catch (error) {
+    console.error("Error creating recipe:", error);
+    throw new Error("Failed to create recipe.");
+  }
 }
