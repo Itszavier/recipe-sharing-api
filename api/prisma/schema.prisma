@@ -42,7 +42,7 @@ model Recipe {
   id           String             @id @default(auto()) @map("_id") @db.ObjectId
   title        String // Title of the recipe
   description  String // Description of the recipe
-  image        String // URL to the recipe image
+  image       String? // URL to the recipe image
   mealType     String // Type of meal (e.g., Dinner, Lunch)
   cuisine      String // Cuisine type (e.g., Italian, Asian)
   dietaryInfo  DietaryInfo? // Nested model for dietary info
