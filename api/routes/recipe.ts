@@ -89,78 +89,95 @@ router.delete(
     }
   }
 );
-
 router.get("/", async function (req, res, next) {
+  try {
+    const { limit = 10, page = 1 } = req.query;
+
+    // Pagination calculation
+    const skip =
+      (parseInt(page as string) - 1) * parseInt(limit as string);
+    const take = parseInt(limit as string);
+
+    // Fetch all recipes with pagination
+    const recipes = await prisma.recipe.findMany({
+      skip: skip,
+      take: take,
+      include: {
+        ingredients: {
+          include: {
+            Ingredient: true,
+          },
+        },
+      },
+    });
+
+    // Count total recipes for pagination
+    const totalRecipes = await prisma.recipe.count();
+
+    res.status(200).json({
+      message: "Here is the list of recipes",
+      recipes,
+      totalRecipes,
+      totalPages: Math.ceil(totalRecipes / take),
+      currentPage: parseInt(page as string),
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/search", async function (req, res, next) {
   try {
     const {
       id,
-      name,
-      ingredient,
-      dietaryInfo,
+      title,
       description,
       limit = 10,
       page = 1,
     } = req.query;
 
-    // Building the query filters dynamically
-    const filters: any = {};
-
-    // Search by recipe id (exact match)
-    if (id) {
-      filters.id = parseInt(id as string); // Ensure id is an integer
-    }
-
-    // Search by recipe name
-    if (name) {
-      filters.name = {
-        contains: name as string, // Perform a "like" search for name
-        mode: "insensitive", // Make the search case-insensitive
-      };
-    }
-
-    // Search by ingredient name (ingredients must be associated with the recipe)
-    if (ingredient) {
-      filters.ingredients = {
-        some: {
-          name: {
-            contains: ingredient as string,
-            mode: "insensitive",
-          },
-        },
-      };
-    }
-
-    // Search by dietary information
-    if (dietaryInfo) {
-      filters.dietaryInfo = {
-        some: {
-          type: {
-            contains: dietaryInfo as string,
-            mode: "insensitive",
-          },
-        },
-      };
-    }
-
-    // Search by description
-    if (description) {
-      filters.description = {
-        contains: description as string, // Perform a "like" search for description
-        mode: "insensitive", // Make the search case-insensitive
-      };
-    }
-
-    // Pagination
+    // Pagination calculation
     const skip =
       (parseInt(page as string) - 1) * parseInt(limit as string);
     const take = parseInt(limit as string);
 
-    // Fetch recipes with the filters and pagination
+    // Build the search filters dynamically
+    const filters: any = {};
+
+    // Search by recipe id (exact match)
+    if (id) {
+      filters.id = id as string; // Assuming id is passed as a string
+    }
+
+    // Search by recipe title
+    if (title) {
+      filters.title = {
+        contains: title as string, // "like" search for title
+        mode: "insensitive", // Case-insensitive search
+      };
+    }
+
+    // Search by recipe description
+    if (description) {
+      filters.description = {
+        contains: description as string, // "like" search for description
+        mode: "insensitive", // Case-insensitive search
+      };
+    }
+
+    // Fetch recipes with the dynamic filters and pagination
     const recipes = await prisma.recipe.findMany({
       where: filters,
-      include: { ingredients: true, dietaryInfo: true },
       skip: skip,
       take: take,
+
+      include: {
+        ingredients: {
+          include: {
+            Ingredient: true,
+          },
+        },
+      },
     });
 
     // Count total recipes for pagination
@@ -169,7 +186,7 @@ router.get("/", async function (req, res, next) {
     });
 
     res.status(200).json({
-      message: "Here is the list of recipes",
+      message: "Here is the list of recipes matching your search",
       recipes,
       totalRecipes,
       totalPages: Math.ceil(totalRecipes / take),

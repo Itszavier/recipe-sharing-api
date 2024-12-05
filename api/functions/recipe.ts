@@ -40,7 +40,7 @@ export async function createRecipeWithIngredients(
 
   const ingredientsToUse = await Promise.all(
     ingredients.map(async (ingredient, index) => {
-      return await prisma.ingredient.upsert({
+      return await prisma.ingredients.upsert({
         where: { name: ingredient.name },
         update: {},
         create: {
@@ -73,8 +73,7 @@ export async function createRecipeWithIngredients(
       dietaryInfo: true,
       ingredients: {
         include: {
-          Ingredient: { include: { recipes: true } },
-          recipe: true,
+          Ingredient: true,
         },
       },
     },

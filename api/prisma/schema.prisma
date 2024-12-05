@@ -14,14 +14,13 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  email    String    @unique
-  password String
-  name     String
-  profile  String?   @default("https://doodleipsum.com/700/avatar?i=39d783c98bfcf597e8c29d3dc5af7bc0")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String
+  profile   String?  @default("https://doodleipsum.com/700/avatar?i=39d783c98bfcf597e8c29d3dc5af7bc0")
   createdAt DateTime @default(now()) // Timestamp when the key was created
   updatedAt DateTime @updatedAt
-
 
   apiKeys ApiKeys[]
 }
@@ -42,7 +41,7 @@ model Recipe {
   id           String             @id @default(auto()) @map("_id") @db.ObjectId
   title        String // Title of the recipe
   description  String // Description of the recipe
-  image       String? // URL to the recipe image
+  image        String? // URL to the recipe image
   mealType     String // Type of meal (e.g., Dinner, Lunch)
   cuisine      String // Cuisine type (e.g., Italian, Asian)
   dietaryInfo  DietaryInfo? // Nested model for dietary info
@@ -55,26 +54,26 @@ model Recipe {
   source       String? // URL to the recipe source
   video        String? // Optional video URL
   createdbyId  String             @db.ObjectId
-  createdAt DateTime @default(now()) // Timestamp when the key was created
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime           @default(now()) // Timestamp when the key was created
+  updatedAt    DateTime           @updatedAt
 }
 
-model Ingredient {
+model Ingredients {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String  @unique // Enforces unique ingredient names
   description String? // Optional description of the ingredient
-  recipes RecipeIngredient[]
+
+  RecipeIngredient RecipeIngredient[]
 }
 
-
 model RecipeIngredient {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   name         String // Ingredient name (e.g., "Eggs", "Spaghetti")
   quantity     String // Quantity of the ingredient (e.g., "4", "400g")
-  recipeId     String      @db.ObjectId // Foreign key to Recipe
-  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe// Relationship to the Recipe model
-  Ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
-  ingredientId String     @db.ObjectId
+  recipeId     String       @db.ObjectId // Foreign key to Recipe
+  recipe       Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe// Relationship to the Recipe model
+  Ingredient   Ingredients? @relation(fields: [ingredientId], references: [id])
+  ingredientId String       @db.ObjectId
 }
 
 model DietaryInfo {
@@ -82,6 +81,6 @@ model DietaryInfo {
   isVegetarian Boolean // Is the recipe vegetarian?
   isVegan      Boolean // Is the recipe vegan?
   isGlutenFree Boolean // Is the recipe gluten-free?
-  recipeId     String?  @unique @db.ObjectId // Foreign key to Recipe
+  recipeId     String? @unique @db.ObjectId // Foreign key to Recipe
   recipe       Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade) // Relationship to Recipe
 }
