@@ -21,7 +21,6 @@ model User {
   profile   String?  @default("https://doodleipsum.com/700/avatar?i=39d783c98bfcf597e8c29d3dc5af7bc0")
   createdAt DateTime @default(now()) // Timestamp when the key was created
   updatedAt DateTime @updatedAt
-
   apiKeys ApiKeys[]
 }
 
