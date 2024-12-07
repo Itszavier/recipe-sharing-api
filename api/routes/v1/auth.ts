@@ -3,16 +3,16 @@
 import { Router } from "express";
 import apiKeysRoute from "./keys";
 import { z } from "zod";
-import { prisma } from "../db";
+import { prisma } from "../../db";
 import {
   comparePassword,
   encryptPassword,
   generateToken,
-} from "../utils/functions";
-import { AvailablePermissions } from "../utils/permissions";
-import { customError } from "../utils/errorResponse";
+} from "../../utils/functions";
+import { AvailablePermissions } from "../../utils/permissions";
+import { customError } from "../../utils/errorResponse";
 import rateLimit from "express-rate-limit";
-import { requestLimiter } from "../utils/ratelimiter";
+import { requestLimiter } from "../../utils/ratelimiter";
 
 const router = Router();
 

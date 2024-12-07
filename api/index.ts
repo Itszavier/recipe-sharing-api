@@ -2,8 +2,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 
-import authRoutes from "./routes/auth";
-import apiRoutes from "./routes/api";
+import apiRoutes from "./routes";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -12,8 +11,6 @@ app.use(cors());
 
 app.use(express.json());
 
-//routes
-app.use("/auth", authRoutes);
 
 app.use("/api", apiRoutes);
 
