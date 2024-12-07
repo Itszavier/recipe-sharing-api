@@ -1,12 +1,12 @@
 /** @format */
 
 import { Router } from "express";
-import { prisma } from "../../db";
-import { createRecipeSchema } from "../../zod_schemas/rescipe";
+import { prisma } from "../../../db";
+import { createRecipeSchema } from "../../../schemas/rescipe";
 import { z } from "zod";
-import { customError } from "../../utils/errorResponse";
-import { requestLimiter } from "../../utils/ratelimiter";
-import { createRecipe } from "../../functions/recipe";
+import { customError } from "../../../functions/errorResponse";
+import { requestLimiter } from "../../../utils/ratelimiter";
+import { createRecipe } from "../../../functions/recipe";
 
 const router = Router();
 
@@ -57,7 +57,7 @@ router.delete(
       const recipeId = req.params.recipeId;
 
       // Check if the recipe exists
-      const recipe = await prisma.recipe.findUnique({
+      const recipe = await prisma.recipes.findUnique({
         where: { id: recipeId },
       });
 
@@ -83,7 +83,7 @@ router.delete(
       }
 
       // Delete the recipe
-      await prisma.recipe.delete({ where: { id: recipeId } });
+      await prisma.recipes.delete({ where: { id: recipeId } });
 
       res.status(200).json({
         message: "Recipe deleted successfully.",
@@ -103,7 +103,7 @@ router.get("/", async function (req, res, next) {
     const take = parseInt(limit as string);
 
     // Fetch all recipes with pagination
-    const recipes = await prisma.recipe.findMany({
+    const recipes = await prisma.recipes.findMany({
       skip: skip,
       take: take,
       include: {
@@ -116,7 +116,7 @@ router.get("/", async function (req, res, next) {
     });
 
     // Count total recipes for pagination
-    const totalRecipes = await prisma.recipe.count();
+    const totalRecipes = await prisma.recipes.count();
 
     res.status(200).json({
       message: "Here is the list of recipes",
@@ -170,7 +170,7 @@ router.get("/search", async function (req, res, next) {
     }
 
     // Fetch recipes with the dynamic filters and pagination
-    const recipes = await prisma.recipe.findMany({
+    const recipes = await prisma.recipes.findMany({
       where: filters,
       skip: skip,
       take: take,
@@ -185,7 +185,7 @@ router.get("/search", async function (req, res, next) {
     });
 
     // Count total recipes for pagination
-    const totalRecipes = await prisma.recipe.count({
+    const totalRecipes = await prisma.recipes.count({
       where: filters,
     });
 

@@ -1,14 +1,14 @@
 /** @format */
 
 import { Router } from "express";
-import accessTokenAuth from "../../middleware/accessToken";
-import { prisma } from "../../db";
+import accessTokenAuth from "../../../middleware/accessToken";
+import { prisma } from "../../../db";
 import { uid } from "uid";
 import { z } from "zod";
-import { available_permissions } from "../../utils/permissions";
-import { customError } from "../../utils/errorResponse";
+import { available_permissions } from "../../../utils/permissions";
+import { customError } from "../../../functions/errorResponse";
 import rateLimit from "express-rate-limit";
-import { requestLimiter } from "../../utils/ratelimiter";
+import { requestLimiter } from "../../../utils/ratelimiter";
 
 const router = Router();
 

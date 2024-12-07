@@ -41,14 +41,16 @@ interface IInstructions {
 
 async function createIngredients(ingredients: IIngredients[]) {
   const ingredientsToUse = await Promise.all(
-   ingredients.map(async (ingredient) => await prisma.ingredients.upsert({
-      where: { name: ingredient.name },
-      update: {},
-      create: {
-        name: ingredient.name,
-        description: ingredient.description,
-      },
-    })
+    ingredients.map(
+      async (ingredient) =>
+        await prisma.ingredients.upsert({
+          where: { name: ingredient.name },
+          update: {},
+          create: {
+            name: ingredient.name,
+            description: ingredient.description,
+          },
+        })
     )
   );
 
@@ -60,6 +62,7 @@ export async function createRecipe(data: {
   instructions: IInstructions[];
   dietaryInfo?: IDietaryInfo;
 }) {
+  /*
   try {
     const { recipe, instructions, dietaryInfo } = data;
     const { ingredients, ...recipeDetails } = recipe;
@@ -68,7 +71,7 @@ export async function createRecipe(data: {
     const ingredientsToUse = await createIngredients(ingredients);
     
     // Create recipe
-    return await prisma.recipe.create({
+    return await prisma.recipes.create({
       data: {
         ...recipeDetails,
         dietaryInfo: dietaryInfo
@@ -91,5 +94,5 @@ export async function createRecipe(data: {
   } catch (error) {
     console.error("Error creating recipe:", error);
     throw new Error("Failed to create recipe.");
-  }
+  }*/
 }

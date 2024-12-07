@@ -1,7 +1,7 @@
 /** @format */
 import { Router } from "express";
 import v1Routes from "./v1";
-import apiKeyAuth from "../middleware/apikeyToken";
+import apiKeyAuth from "../../middleware/apikeyToken";
 
 const router = Router();
 
