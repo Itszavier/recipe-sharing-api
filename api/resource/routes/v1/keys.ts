@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 import accessTokenAuth from "../../../middleware/accessToken";
-import { prisma } from "../../../db";
+import { prisma } from "../../../config/db";
 import { uid } from "uid";
 import { z } from "zod";
 import { available_permissions } from "../../../utils/permissions";

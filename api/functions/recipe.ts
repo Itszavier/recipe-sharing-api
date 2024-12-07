@@ -1,6 +1,6 @@
 /** @format */
 
-import { prisma } from "../db";
+import { prisma } from "../config/db";
 
 interface IRecipeData {
   title: string;

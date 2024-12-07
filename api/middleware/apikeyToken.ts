@@ -1,7 +1,7 @@
 /** @format */
 
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../db";
+import { prisma } from "../config/db";
 
 export default async function apiKeyAuth(
   req: Request,

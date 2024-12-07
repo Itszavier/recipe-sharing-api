@@ -8,7 +8,7 @@ import {
   encryptPassword,
   generateToken,
 } from "../../../utils/functions";
-import { prisma } from "../../../db";
+import { prisma } from "../../../config/db";
 import { loginSchema, registerSchema } from "../../../schemas/auth";
 import { z } from "zod";
 
