@@ -3,6 +3,8 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../../config/db";
 import { customError } from "../../../functions/errorResponse";
+import { createRecipeSchema } from "../../../schemas/rescipe";
+import { z } from "zod";
 
 export async function getAll(
   req: Request,
@@ -124,7 +126,45 @@ export async function create(
   req: Request,
   res: Response,
   next: NextFunction
-) {}
+) {
+  try {
+    const { success, error } = createRecipeSchema.safeParse(req.body);
+
+    if (!success) {
+      res.status(200).json({
+        success: false,
+        message: "validation error",
+        validationErrors: error.errors,
+      });
+      return;
+    }
+
+    const {
+      ingredients,
+      instructions,
+      dietaryInfo,
+      ...recipeDetails
+    }: z.infer<typeof createRecipeSchema> = req.body;
+
+    /* const ingredientsToUse = await Promise.all(
+      ingredients.map(async function (ingredient, index) {
+        return await prisma.ingredients.upsert({
+          where: { name: ingredient.name },
+          update: {},
+          create: { name: ingredient.name },
+        });
+      })
+    );
+
+    await prisma.recipes.create({
+      data: { ...recipeDetails, ingredients: {} },
+    });
+
+    */
+  } catch (error) {
+    next(error);
+  }
+}
 
 export async function deleteById(
   req: Request,

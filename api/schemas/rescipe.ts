@@ -1,12 +1,10 @@
 /** @format */
-
 import { z } from "zod";
 
 // Custom Zod validation for time formats like "10m", "90s", "1h"
 export const timeFormatSchema = z.string().refine(
   (value) => {
-    // Regex matches strings like 10m, 90s, 1h
-    const timeRegex = /^(\d+)([smh])$/;
+    const timeRegex = /^(\d+)([smh])$/; // Matches valid time formats
     return timeRegex.test(value);
   },
   {
@@ -15,45 +13,70 @@ export const timeFormatSchema = z.string().refine(
   }
 );
 
+// Instruction Schema
 export const instructionSchema = z.object({
-  text: z.string().min(1, "Instruction text is required"), // Instruction step text
+  text: z.string().min(1, "Instruction text is required"),
   image: z
     .string()
     .url("Invalid URL for instruction image")
-    .optional(), // Optional image for the step
+    .optional(),
 });
 
+// Schema for ingredients with validation logic
+export const ingredientSchema = z.object({
+  name: z.string().min(1, "Ingredient name is required"),
+  quantity: z.string().min(1, "Ingredient quantity is required"),
+});
+
+// Schema for dietary info
+export const dietaryInfoSchema = z.object({
+  isVegetarian: z.boolean(),
+  isVegan: z.boolean(),
+  isGlutenFree: z.boolean(),
+});
+
+// Main create recipe schema
 export const createRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  image: z.string().url("Invalid URL for image").optional(), // image is now optional
-  mealType: z.string().min(1, "Meal type is required"),
+  image: z.string().url("Invalid URL for recipe image"), // Validates recipe image
+  mealType: z.nativeEnum({
+    BREAKFAST: "BREAKFAST",
+    BRUNCH: "BRUNCH",
+    LUNCH: "LUNCH",
+    DINNER: "DINNER",
+    SNACK: "SNACK",
+    DESSERT: "DESSERT",
+    APPETIZER: "APPETIZER",
+    MAIN_COURSE: "MAIN_COURSE",
+    SIDE_DISH: "SIDE_DISH",
+    BEVERAGE: "BEVERAGE",
+    SOUP: "SOUP",
+    SALAD: "SALAD",
+    BREAD: "BREAD",
+    SAUCE: "SAUCE",
+    PARTY_FOOD: "PARTY_FOOD",
+    MIDNIGHT_SNACK: "MIDNIGHT_SNACK",
+  }),
   cuisine: z.string().min(1, "Cuisine type is required"),
-  dietaryInfo: z
-    .object({
-      isVegetarian: z.boolean(),
-      isVegan: z.boolean(),
-      isGlutenFree: z.boolean(),
+  dietaryInfo: dietaryInfoSchema.optional(),
+  prepTime: timeFormatSchema,
+  cookTime: timeFormatSchema,
+  servings: z.number().min(1, "Servings must be at least 1"),
+  difficulty: z
+    .nativeEnum({
+      EASY: "EASY",
+      MEDIUM: "MEDIUM",
+      HARD: "HARD",
     })
     .optional(),
-  prepTime: timeFormatSchema, // prepTime as a string with custom validation
-  cookTime: timeFormatSchema, // cookTime as a string with custom validation
-  servings: z.number().min(1, "Servings must be at least 1"),
   ingredients: z
-    .array(
-      z.object({
-        name: z.string().min(1, "Ingredient name is required"),
-        quantity: z
-          .string()
-          .min(1, "Ingredient quantity is required"),
-      })
-    )
+    .array(ingredientSchema)
     .min(1, "At least one ingredient is required"),
   instructions: z
-    .array(instructionSchema) // Use the refined instruction schema
+    .array(instructionSchema)
     .min(1, "At least one instruction is required"),
-
-  tags: z.array(z.string()).optional(), // tags are now optional
+  tags: z.array(z.string()),
   source: z.string().url("Invalid URL for recipe source").optional(),
   video: z.string().url("Invalid video URL").optional(),
 });
