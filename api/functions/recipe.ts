@@ -19,21 +19,30 @@ type TCreateNutritionsReturnType = Nutritions & {
 
 type TCreateIngredientReturnType = Ingredients & { quantity: string };
 
-class Recipe {
-  constructor() {}
+interface NutritionInput {
+  name: string;
+  amount: number;
+  unit: string;
+  image?: string;
+  description?: string;
+  userId?: string;
+}
 
+interface IngredientsInput {
+  name: string;
+  description?: string;
+  image?: string;
+  userid?: string;
+  quantity: string;
+}
+
+class Recipe {
   async createIngredients(
-    data: {
-      name: string;
-      description?: string;
-      image?: string;
-      userid?: string;
-      quantity: string;
-    }[]
+    data: IngredientsInput[]
   ): Promise<TCreateIngredientReturnType[]> {
     const ingredientsToUse = await Promise.all(
       data.map(async (ingredient, index) => {
-        const ingredientData = await prisma.ingredients.upsert({
+        const result = await prisma.ingredients.upsert({
           where: { name: ingredient.name },
           update: {},
           create: {
@@ -44,7 +53,7 @@ class Recipe {
         });
 
         return {
-          ...ingredientData,
+          ...result,
           quantity: ingredient.quantity,
         } as TCreateIngredientReturnType;
       })
@@ -54,14 +63,7 @@ class Recipe {
   }
 
   async createNutritions(
-    data: {
-      name: string;
-      amount: number;
-      unit: string;
-      image?: string;
-      description?: string;
-      userId?: string;
-    }[]
+    data: NutritionInput[]
   ): Promise<TCreateNutritionsReturnType[]> {
     const nutritionsToUse = await Promise.all(
       data.map(async (nutritions, index) => {
