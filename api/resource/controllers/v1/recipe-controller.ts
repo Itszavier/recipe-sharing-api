@@ -5,6 +5,7 @@ import { prisma } from "../../../config/db";
 import { customError } from "../../../functions/errorResponse";
 import { createRecipeSchema } from "../../../schemas/rescipe";
 import { z } from "zod";
+import Recipe from "../../../functions/recipe";
 
 export async function getAll(
   req: Request,
@@ -146,21 +147,15 @@ export async function create(
       ...recipeDetails
     }: z.infer<typeof createRecipeSchema> = req.body;
 
-    /* const ingredientsToUse = await Promise.all(
-      ingredients.map(async function (ingredient, index) {
-        return await prisma.ingredients.upsert({
-          where: { name: ingredient.name },
-          update: {},
-          create: { name: ingredient.name },
-        });
-      })
+    const recipe = new Recipe();
+
+    const ingredientResults = await recipe.createIngredients(
+      ingredients
     );
 
-    await prisma.recipes.create({
-      data: { ...recipeDetails, ingredients: {} },
-    });
+    //  const instruction = await recipe.createIn(instructions);
 
-    */
+    // recipe.create({ ingredients: ingredientsResults });
   } catch (error) {
     next(error);
   }

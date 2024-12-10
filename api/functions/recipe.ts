@@ -36,7 +36,12 @@ interface IngredientsInput {
   quantity: string;
 }
 
-class Recipe {
+interface IntructionInput {
+  text: string;
+  image?: string;
+}
+
+export default class Recipe {
   async createIngredients(
     data: IngredientsInput[]
   ): Promise<TCreateIngredientReturnType[]> {
