@@ -1,7 +1,6 @@
 /** @format */
 
-import z, { promise, RawCreateParams, string } from "zod";
-
+import { intersection } from "zod";
 import { prisma } from "../config/db";
 
 import {
@@ -12,6 +11,14 @@ import {
   Recipes,
 } from "@prisma/client";
 
+type TCreateNutritionsReturnType = Nutritions & {
+  amount: number;
+  unit: string;
+  details?: string;
+};
+
+type TCreateIngredientReturnType = Ingredients & { quantity: string };
+
 class Recipe {
   constructor() {}
 
@@ -21,11 +28,12 @@ class Recipe {
       description?: string;
       image?: string;
       userid?: string;
+      quantity: string;
     }[]
-  ) {
+  ): Promise<TCreateIngredientReturnType[]> {
     const ingredientsToUse = await Promise.all(
       data.map(async (ingredient, index) => {
-        return await prisma.ingredients.upsert({
+        const ingredientData = await prisma.ingredients.upsert({
           where: { name: ingredient.name },
           update: {},
           create: {
@@ -34,6 +42,11 @@ class Recipe {
             image: ingredient.image,
           },
         });
+
+        return {
+          ...ingredientData,
+          quantity: ingredient.quantity,
+        } as TCreateIngredientReturnType;
       })
     );
 
@@ -43,15 +56,16 @@ class Recipe {
   async createNutritions(
     data: {
       name: string;
-      quantity: string;
+      amount: number;
+      unit: string;
       image?: string;
       description?: string;
       userId?: string;
     }[]
-  ) {
+  ): Promise<TCreateNutritionsReturnType[]> {
     const nutritionsToUse = await Promise.all(
       data.map(async (nutritions, index) => {
-        return await prisma.nutritions.upsert({
+        const nutrition = await prisma.nutritions.upsert({
           where: { name: nutritions.name },
           update: {},
           create: {
@@ -62,6 +76,12 @@ class Recipe {
             authorId: nutritions.userId,
           },
         });
+
+        return {
+          ...nutrition,
+          unit: nutritions.unit,
+          amount: nutritions.amount,
+        } as TCreateNutritionsReturnType;
       })
     );
 
@@ -69,8 +89,8 @@ class Recipe {
   }
 
   async create(data: {
-    ingredients: Ingredients[];
-    nutritions: Nutritions[];
+    ingredients: TCreateIngredientReturnType[];
+    nutritions: TCreateNutritionsReturnType[];
     instructions: RecipeInstructions[];
     recipeDetails: Omit<
       Recipes,
@@ -80,7 +100,37 @@ class Recipe {
     await prisma.recipes.create({
       data: {
         ...data.recipeDetails,
-       // dietaryInfo: { create: data.recipeDetails.d },
+        // dietaryInfo: { create: data.recipeDetails.d },
+        nutritions: {
+          create: data.nutritions.map((nutrition, index) => {
+            return {
+              name: nutrition.name,
+              amount: nutrition.amount,
+              unit: nutrition.unit,
+              nutritionId: nutrition.id,
+              details: nutrition.details,
+            };
+          }),
+        },
+
+        instructions: {
+          create: data.instructions.map((instruction, index) => {
+            return {
+              text: instruction.text,
+              image: instruction.image,
+            };
+          }),
+        },
+
+        ingredients: {
+          create: data.ingredients.map((ingredient, index) => {
+            return {
+              name: ingredient.name,
+              ingredientId: ingredient.id,
+              quantity: ingredient.quantity,
+            };
+          }),
+        },
       },
     });
   }

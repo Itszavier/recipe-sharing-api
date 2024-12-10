@@ -144,8 +144,8 @@ model RecipeNutritions {
   unit        String
   recipeId    String     @db.ObjectId
   nutritionId String     @db.ObjectId
-  nutrition   Nutritions @relation(fields: [nutritionId], references: [id])
-  recipe      Recipes    @relation(fields: [recipeId], references: [id])
+  nutrition   Nutritions? @relation(fields: [nutritionId], references: [id])
+  recipe      Recipes?    @relation(fields: [recipeId], references: [id])
   details     String?
 
   @@unique([recipeId, nutritionId])
